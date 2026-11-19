@@ -31,6 +31,15 @@ public record UserRequestDTO(
         Genero genero,
 
         @NotNull(message = "O nivel de atividade e obrigatorio.")
-        NivelAtividade nivelAtividade
+        NivelAtividade nivelAtividade,
+
+        // Opcionais: se vierem null, mantem-se o valor atual (ou o por defeito)
+        @DecimalMin(value = "0.8", message = "A proteina deve ser no minimo 0.8 g/kg.")
+        @DecimalMax(value = "3.0", message = "A proteina deve ser no maximo 3.0 g/kg.")
+        Double proteinaGPorKg,
+
+        @DecimalMin(value = "15", message = "A gordura deve ser no minimo 15%.")
+        @DecimalMax(value = "50", message = "A gordura deve ser no maximo 50%.")
+        Double gorduraPercent
 ) {
 }

@@ -23,10 +23,21 @@ public class UserService {
         this.mealRepository = mealRepository;
     }
 
+    private void aplicarMetas(User user, UserRequestDTO dto) {
+        if (dto.proteinaGPorKg() != null) {
+            user.setProteinaGPorKg(dto.proteinaGPorKg());
+        }
+        if (dto.gorduraPercent() != null) {
+            user.setGorduraPercent(dto.gorduraPercent());
+        }
+    }
+
+
     @Transactional
     public UserResponseDTO create(UserRequestDTO dto) {
         User user = new User(dto.nome(), dto.idade(), dto.peso(), dto.altura(),
                 dto.genero(), dto.nivelAtividade());
+        aplicarMetas(user, dto);
         return UserResponseDTO.from(userRepository.save(user));
     }
 
@@ -51,7 +62,8 @@ public class UserService {
         user.setAltura(dto.altura());
         user.setGenero(dto.genero());
         user.setNivelAtividade(dto.nivelAtividade());
-        return UserResponseDTO.from(user); // dirty checking grava no commit
+        aplicarMetas(user, dto);
+        return UserResponseDTO.from(user);
     }
 
     @Transactional

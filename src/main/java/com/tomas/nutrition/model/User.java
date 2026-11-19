@@ -15,6 +15,12 @@ public class User {
     private int idade;
     private double peso;      // kg
     private double altura;    // cm
+    private static final double KCAL_POR_G_PROTEINA = 4.0;
+    private static final double KCAL_POR_G_CARBS = 4.0;
+    private static final double KCAL_POR_G_GORDURA = 9.0;
+
+    private double proteinaGPorKg = 1.8;
+    private double gorduraPercent = 30.0;
 
     @Enumerated(EnumType.STRING)
     private Genero genero;
@@ -40,6 +46,8 @@ public class User {
     public int getIdade() { return idade; }
     public double getPeso() { return peso; }
     public double getAltura() { return altura; }
+    public double getProteinaGPorKg() { return proteinaGPorKg; }
+    public double getGorduraPercent() { return gorduraPercent; }
     public Genero getGenero() { return genero; }
     public NivelAtividade getNivelAtividade() { return nivelAtividade; }
 
@@ -71,6 +79,20 @@ public class User {
         this.altura = altura;
     }
 
+    public void setProteinaGPorKg(double proteinaGPorKg) {
+        if (proteinaGPorKg < 0.8 || proteinaGPorKg > 3.0) {
+            throw new InvalidDataException("A proteina deve estar entre 0.8 e 3.0 g por kg.");
+        }
+        this.proteinaGPorKg = proteinaGPorKg;
+    }
+
+    public void setGorduraPercent(double gorduraPercent) {
+        if (gorduraPercent < 15 || gorduraPercent > 50) {
+            throw new InvalidDataException("A gordura deve estar entre 15% e 50% das calorias.");
+        }
+        this.gorduraPercent = gorduraPercent;
+    }
+
     public void setGenero(Genero genero) { this.genero = genero; }
     public void setNivelAtividade(NivelAtividade nivelAtividade) { this.nivelAtividade = nivelAtividade; }
 
@@ -99,5 +121,18 @@ public class User {
 
     public double getTdee() {
         return getTmb() * nivelAtividade.getFator();
+    }
+
+     public NutrientesPorcao getMetas() {
+        double tdee = getTdee();
+        double proteinaG = peso * proteinaGPorKg;
+        double gorduraG = tdee * (gorduraPercent / 100.0) / KCAL_POR_G_GORDURA;
+
+        double kcalRestantes = tdee
+                - proteinaG * KCAL_POR_G_PROTEINA
+                - gorduraG * KCAL_POR_G_GORDURA;
+        double carbsG = Math.max(0, kcalRestantes) / KCAL_POR_G_CARBS;
+
+        return new NutrientesPorcao(tdee, proteinaG, carbsG, gorduraG);
     }
 }

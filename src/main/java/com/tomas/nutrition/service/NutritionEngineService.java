@@ -16,16 +16,6 @@ import java.time.LocalDate;
 @Service
 public class NutritionEngineService {
 
-    // Distribuicao de macros (percentagem das calorias totais)
-    private static final double PERCENT_PROTEINA = 0.30;
-    private static final double PERCENT_CARBS = 0.40;
-    private static final double PERCENT_GORDURA = 0.30;
-
-    // Calorias por grama de cada macronutriente
-    private static final double KCAL_POR_G_PROTEINA = 4.0;
-    private static final double KCAL_POR_G_CARBS = 4.0;
-    private static final double KCAL_POR_G_GORDURA = 9.0;
-
     private final UserRepository userRepository;
     private final MealRepository mealRepository;
 
@@ -44,18 +34,15 @@ public class NutritionEngineService {
                 .map(Meal::getTotals)
                 .reduce(NutrientesPorcao.zero(), NutrientesPorcao::somar);
 
-        double tdee = user.getTdee();
-        double metaProteina = tdee * PERCENT_PROTEINA / KCAL_POR_G_PROTEINA;
-        double metaCarbs = tdee * PERCENT_CARBS / KCAL_POR_G_CARBS;
-        double metaGordura = tdee * PERCENT_GORDURA / KCAL_POR_G_GORDURA;
+        NutrientesPorcao metas = user.getMetas();
 
         return new NutritionSummaryDTO(
                 userId,
                 dia,
-                progresso(tdee, consumido.calorias()),
-                progresso(metaProteina, consumido.proteina()),
-                progresso(metaCarbs, consumido.carbs()),
-                progresso(metaGordura, consumido.gordura())
+                progresso(metas.calorias(), consumido.calorias()),
+                progresso(metas.proteina(), consumido.proteina()),
+                progresso(metas.carbs(), consumido.carbs()),
+                progresso(metas.gordura(), consumido.gordura())
         );
     }
 

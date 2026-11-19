@@ -12,10 +12,13 @@ public record UserResponseDTO(
         double altura,
         Genero genero,
         NivelAtividade nivelAtividade,
+        double proteinaGPorKg,
+        double gorduraPercent,
         double imc,
         String classificacaoImc,
         double tmb,
-        double tdee
+        double tdee,
+        NutrientesDTO metas
 ) {
     public static UserResponseDTO from(User user) {
         return new UserResponseDTO(
@@ -26,10 +29,13 @@ public record UserResponseDTO(
                 user.getAltura(),
                 user.getGenero(),
                 user.getNivelAtividade(),
+                user.getProteinaGPorKg(),
+                user.getGorduraPercent(),
                 user.getImc(),
                 user.getClassificacaoImc().getDescricao(),
                 user.getTmb(),
-                user.getTdee()
+                user.getTdee(),
+                NutrientesDTO.from(user.getMetas())
         );
     }
 }
